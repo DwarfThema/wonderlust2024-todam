@@ -22,6 +22,20 @@ export default function TotamMainPage() {
 
   return (
     <div className="absolute h-screen min-w-full">
+      <button
+        className="z-50 text-black text-center absolute top-0 left-0  bg-white"
+        onClick={() =>
+          setSequence((prev) => {
+            if (prev === 5) {
+              return 6;
+            } else {
+              return 5;
+            }
+          })
+        }
+      >
+        상태변경
+      </button>
       {/* <LoadingScreen /> */}
       {sequence !== 7 && (
         <TodamCanvas
