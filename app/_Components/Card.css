@@ -1,0 +1,151 @@
+.cards {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 2000px;
+  position: relative;
+  z-index: 1;
+  transform: translate3d(0.1px, 0.1px, 0.1px);
+}
+
+.card {
+  --color1: rgb(0, 234, 255);
+  --color2: rgb(252, 255, 165);
+
+  width: 320px;
+  height: 510px;
+  background-color: #26ff00;
+  background-image: url(https://imagedelivery.net/zX2GiBzzHYsroLCJsWTCdA/94d99fd8-1dbc-4b05-b2e4-975f9475d100/public);
+  background-size: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 5% / 3.5%;
+  box-shadow: -13px -13px 13px -15px var(--color1),
+    13px 13px 13px -15px var(--color2), 0 0 4px 2px rgba(255, 255, 255, 0.5),
+    0 35px 25px -15px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+  vertical-align: middle;
+  margin: 20px 10px;
+  animation: holoCard 15s ease infinite;
+  transform-origin: center;
+  z-index: 10;
+  overflow: hidden;
+  transform: translate3d(0, 0, -1px);
+}
+
+.card:before,
+.card:after {
+  content: "";
+  mix-blend-mode: screen;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  background-repeat: no-repeat;
+}
+
+.card:before {
+  opacity: 0.1;
+  background-position: 50% 50%;
+  background-size: 300% 300%;
+  animation: holoGradient 15s ease infinite both;
+  background-image: linear-gradient(
+    115deg,
+    transparent 0%,
+    var(--color1) 30%,
+    transparent 47.5%,
+    transparent 52.5%,
+    var(--color2) 70%,
+    transparent 100%
+  );
+}
+
+.card:after {
+  mix-blend-mode: screen;
+  background-image: url("/cardCss/holo.webp"), url("/cardCss/sparkles.webp"),
+    linear-gradient(
+      125deg,
+      #ff008450 15%,
+      #fca40040 30%,
+      #ffff0030 40%,
+      #00ff8a20 60%,
+      #00cfff40 70%,
+      #cc4cfa50 85%
+    );
+  background-blend-mode: overlay;
+  background-position: center;
+  mix-blend-mode: color-dodge;
+  opacity: 1;
+  background-size: 160%;
+  z-index: 2;
+  filter: brightness(1) opacity(0.66);
+  /*   animation: holoSparkle 15s ease infinite both;
+  transition: filter 0.5s ease, background-position 0.5s ease; */
+}
+
+.card:after:hover {
+  transition: initial;
+}
+
+.card:hover {
+  animation: none;
+}
+
+.card:hover:before {
+  opacity: 0.5;
+  animation: none;
+  transition: none;
+  background-image: linear-gradient(
+    115deg,
+    transparent 30%,
+    var(--color1) 48%,
+    var(--color2) 53%,
+    transparent 70%
+  );
+  filter: opacity(0.66);
+  mix-blend-mode: screen;
+}
+
+/* @keyframes holoSparkle {
+  0%,
+  5%,
+  100% {
+    opacity: 0.24;
+  }
+  20% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 0.75;
+  }
+} */
+
+/* @keyframes holoGradient {
+  0%,
+  100% {
+    opacity: 0.05;
+    background-position: 50% 50%;
+  }
+  33% {
+    background-position: 100% 100%;
+    opacity: 0.66;
+  }
+  66% {
+    background-position: 0% 0%;
+    opacity: 0.66;
+  }
+}
+/* @keyframes holoCard {
+  0%,
+  100% {
+    transform: rotateZ(0deg) rotateX(0deg) rotateY(0deg);
+  }
+  33% {
+    transform: rotateZ(-6deg) rotateX(-9deg) rotateY(10deg);
+  }
+  66% {
+    transform: rotateZ(6deg) rotateX(9deg) rotateY(-10deg);
+  }
+} */

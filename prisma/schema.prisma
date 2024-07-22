@@ -1,0 +1,213 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+//vercel의 db를 만들면 quickstart의 prisma를 선택하면 바로 붙여넣을 수 있다.
+//세팅을 다하면 vercel에서 conect project를 진행해 프로젝트와 연결해주자.
+//로컬에서도 해당 환경변수에 대한 정보를 받고싶다면 npm i -g vercel 을 설치
+//vercel login을 이용해 로그인
+//vercel link를 이용해 연결
+//vercel env pull .env.development.local 를 하면 vercel에 있는 모든 환경변수를 받을 수 있다.
+//이제 패키지의 build 명령에 deploy 시퀀스도 넣자.
+//"build": "prisma generate && prisma migrate deploy && next build"
+//기존에 로컬 디비(migrations폴더 등)가 있다면 다 지워주자.
+//npx prisma migrate dev --create-only 로 새롭게 마이그레이션 하자.
+//마지막으로 vercel->setting->functions->Region을 DB위치와 동일하게 변경하자 (한국으로 해도됨)
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling..
+  //pooling은 하나의 문지기이며, 사람이 많이 몰린다면 데이터베이스에 대한 연결을 즉시 생성 안한다.
+  //pooling은 많이 들어오는 사람에게 줄을 서라하며 이를 감시하고 매니징해준다.
+  //해당 url이 그 역할을 함
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  //directUrl은 DB에 대한 연결을 즉시 생성해주는 url이다
+  //prisma studio 등을 사용할 때 사용한다
+}
+
+//!!!!! DB가 모두 설정된 이후로부터는 안정성을 위해서 migrate dev를 사용하지 않는다
+//npx prisma migrate dev --create-only
+//로컬에서 잘 돌아가는지 확인 됐으면
+//npx prisma migrate depoly
+//위와같이 진행
+
+model User {
+  id            Int             @id @default(autoincrement())
+  firstname     String?         @default("")
+  lastname      String?         @default("")
+  email         String          @unique
+  phone         String?         @unique
+  password      String?
+  emailConfirm  Boolean?        @default(false)
+  phoneConfirm  Boolean?        @default(false)
+  github_id     String?         @unique
+  naver_id      String?         @unique
+  gmail_id      String?         @unique
+  facebook_id   String?         @unique
+  apple_id      String?         @unique
+  avatar        String?         @default("")
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @updatedAt
+  SMSToken      SMSToken[]
+  EmailToken    EmailToken[]
+  orders        Order[]
+  cart          Cart?
+  addresses     Address[]
+  orderProducts OrderProducts[]
+  Payment       Payment[]
+}
+
+//------- Auth 관련 --------
+
+model SMSToken {
+  id         Int      @id @default(autoincrement())
+  token      String   @unique
+  phone      String?  @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int
+}
+
+model EmailToken {
+  id         Int      @id @default(autoincrement())
+  token      String   @unique
+  email      String?  @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int
+}
+
+//------- 주문 관련 --------
+
+model Artist {
+  id        Int       @id @default(autoincrement())
+  name      String
+  contents  String
+  bannerImg String
+  products  Product[]
+}
+
+model Product {
+  // 상품 ID(productId), 수량(quantity), 가격(price)
+  id            Int             @id @default(autoincrement())
+  price         Float
+  title         String          @unique // title 항목 추가
+  content       String // content 항목 추가
+  imgUrl        String[] // imgUrl을 배열로 설정
+  orderProducts OrderProducts[]
+  cartProducts  CartProducts[]
+  isSoldOut     Boolean         @default(false)
+  inStock       Int             @default(1)
+  created_at    DateTime?       @default(now())
+  updated_at    DateTime?       @updatedAt
+  Artist        Artist?         @relation(fields: [artistId], references: [id])
+  artistId      Int?
+}
+
+model Order {
+  // 주문 상태(status), 총 금액(totalAmount)
+  id            Int             @id @default(autoincrement())
+  orderNumber   String          @unique
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        Int
+  shippingPrice Float?          @default(3000)
+  totalPrice    Float?
+  orderProducts OrderProducts[]
+  payments      Payment[]
+  address       Address?        @relation(fields: [addressId], references: [id], onDelete: Cascade)
+  addressId     Int?
+  status        OrderStatus
+  paymentId     String?
+  orderTime     DateTime        @default(now())
+  created_at    DateTime        @default(now())
+  updated_at    DateTime        @updatedAt
+}
+
+model OrderProducts {
+  id        Int     @id @default(autoincrement())
+  User      User    @relation(fields: [userId], references: [id])
+  userId    Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int
+  quantity  Int
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId   Int
+}
+
+model Cart {
+  // 유저와 1:1관계 장바구니 항목들
+  id           Int            @id @default(autoincrement())
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       Int            @unique
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @updatedAt
+  cartProducts CartProducts[]
+}
+
+model CartProducts {
+  // 상품 ID(productId), 수량(quantity), 가격(price)
+  id        Int     @id @default(autoincrement())
+  cart      Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  cartId    Int
+  Product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int
+  quantity  Int
+  price     Float
+}
+
+model Address {
+  id              Int      @id @default(autoincrement())
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          Int
+  firstname       String
+  lastname        String
+  address1        String
+  address2        String?
+  city            String
+  state           String
+  zip             String
+  country         String
+  phone           String
+  shippingMessage String?
+  isDefault       Boolean  @default(false)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+  Order           Order[]
+}
+
+model Payment {
+  //결제 정보를 저장
+  id         Int       @id @default(autoincrement())
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int
+  order      Order?    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId    Int
+  method     PayMethod
+  amount     Float?
+  created_at DateTime  @default(now())
+  updated_at DateTime  @default(now())
+}
+
+enum OrderStatus {
+  //ENUM으로 정의하여 특정 상태만 허용
+  UNORDERED_INFORMATION
+  UNORDERED_SHIPPING
+  UNORDERED_PAYMENT
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELED
+  REFUNDED
+}
+
+enum PayMethod {
+  //ENUM으로 정의하여 특정 상태만 허용
+  CARD
+  VIRTUAL_ACCOUNT
+  TRANSFER
+  MOBILE
+  GIFT_CERTIFICATE
+  EASY_PAY
+}
