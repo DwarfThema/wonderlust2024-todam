@@ -14,9 +14,11 @@ import TodamCard from "../_Components/todam_card";
 export default function TodamCanvas({
   sequence,
   setSequence,
+  className,
 }: {
   sequence: number;
   setSequence: (sequence: number) => void;
+  className?: string;
 }) {
   const positions = useMemo(() => {
     return [...Array(300)]
@@ -36,7 +38,7 @@ export default function TodamCanvas({
   }, []);
 
   return (
-    <div className="absolute w-full h-screen bg-black -z-20">
+    <div className={`absolute w-full h-screen bg-black -z-20 ${className}`}>
       <Canvas camera={{ fov: 50 }}>
         <Suspense>
           {sequence === 5 && <TodamCard />}

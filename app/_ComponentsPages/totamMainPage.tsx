@@ -24,11 +24,15 @@ export default function TotamMainPage() {
     <div className="absolute h-screen min-w-full">
       {/* <LoadingScreen /> */}
       {sequence !== 7 && (
-        <TodamCanvas sequence={sequence} setSequence={setSequence} />
+        <TodamCanvas
+          className="hidden lg:block"
+          sequence={sequence}
+          setSequence={setSequence}
+        />
       )}
 
       {(sequence === 2 || sequence === 3 || sequence === 4) && (
-        <div className="absolute top-0 left-0 w-full h-full bg-neutral-900 opacity-90 -z-10" />
+        <div className="absolute top-0 left-0 w-full h-full bg-[#141319] opacity-90 -z-10" />
       )}
 
       {sequence === 1 && (
