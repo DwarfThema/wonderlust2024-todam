@@ -21,12 +21,12 @@ export default function TodamCanvas({
   className?: string;
 }) {
   const positions = useMemo(() => {
-    return [...Array(200)]
+    return [...Array(250)]
       .map(() => ({
         position: [
-          30 - Math.random() * 60,
-          20 - Math.random() * 60,
-          -30 - Math.random() * 60,
+          50 - Math.random() * 100,
+          25 - Math.random() * 50,
+          -30 - Math.random() * 30,
         ],
       }))
       .filter(

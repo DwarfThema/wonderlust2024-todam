@@ -18,7 +18,7 @@ export default function TotamMainPage() {
   // 4 만드는 로딩화면
   // 5 결과물 카드
   // 6 저장 공유 씬
-  const [sequence, setSequence] = useState(6);
+  const [sequence, setSequence] = useState(1);
 
   return (
     <div className="absolute h-screen min-w-full">

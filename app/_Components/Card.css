@@ -75,14 +75,13 @@
       #cc4cfa50 85%
     );
   background-blend-mode: overlay;
-  background-position: center;
   mix-blend-mode: color-dodge;
   opacity: 1;
   background-size: 160%;
   z-index: 2;
   filter: brightness(1) opacity(0.66);
-  /*   animation: holoSparkle 15s ease infinite both;
-  transition: filter 0.5s ease, background-position 0.5s ease; */
+  animation: holoSparkle 15s ease infinite both;
+  transition: filter 0.5s ease, holoGradient 0.5s ease;
 }
 
 .card:after:hover {
@@ -108,21 +107,21 @@
   mix-blend-mode: screen;
 }
 
-/* @keyframes holoSparkle {
+@keyframes holoSparkle {
   0%,
   5%,
   100% {
-    opacity: 0.24;
+    opacity: 1;
   }
   20% {
     opacity: 1;
   }
   75% {
-    opacity: 0.75;
+    opacity: 1;
   }
-} */
+}
 
-/* @keyframes holoGradient {
+@keyframes holoGradient {
   0%,
   100% {
     opacity: 0.05;
@@ -137,7 +136,7 @@
     opacity: 0.66;
   }
 }
-/* @keyframes holoCard {
+@keyframes holoCard {
   0%,
   100% {
     transform: rotateZ(0deg) rotateX(0deg) rotateY(0deg);
@@ -148,4 +147,4 @@
   66% {
     transform: rotateZ(6deg) rotateX(9deg) rotateY(-10deg);
   }
-} */
+}
