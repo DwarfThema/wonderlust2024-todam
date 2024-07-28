@@ -15,10 +15,12 @@ export default function TodamCanvas({
   sequence,
   setSequence,
   className,
+  aiImageUrl,
 }: {
   sequence: number;
   setSequence: (sequence: number) => void;
   className?: string;
+  aiImageUrl: string;
 }) {
   const positions = useMemo(() => {
     return [...Array(250)]
@@ -41,7 +43,7 @@ export default function TodamCanvas({
     <div className={`absolute w-full h-screen bg-black -z-20 ${className}`}>
       <Canvas camera={{ fov: 50 }}>
         <Suspense>
-          {sequence === 5 && <TodamCard />}
+          {sequence === 4 && <TodamCard aiImageUrl={aiImageUrl} />}
 
           <ambientLight />
           <Environment preset="apartment" />

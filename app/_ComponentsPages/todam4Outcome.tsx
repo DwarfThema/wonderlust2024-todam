@@ -23,7 +23,7 @@ export default function Todam5Outcome({
         className={`absolute bottom-[10%] transition-opacity duration-500 ${
           isShowing ? "opacity-100" : "opacity-0"
         }`}
-        onClick={() => setSequence(6)}
+        onClick={() => setSequence(5)}
       >
         <h1>Continue</h1>
       </TodamButton>

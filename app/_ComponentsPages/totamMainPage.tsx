@@ -3,9 +3,8 @@
 import { useState } from "react";
 import Todam1Start from "./todam1Start";
 import Todam2Name from "./todam2Name";
-import Todam4MakingLoading from "./todam4MakingLoading";
-import Todam5Outcome from "./todam5Outcome";
-import Todam6SaveShare from "./todam6SaveShare";
+import Todam5Outcome from "./todam4Outcome";
+import Todam6SaveShare from "./todam5SaveShare";
 import TodamCanvas from "./todamCanvasPage";
 import Todam3Ready from "./todam3Ready";
 import LoadingScreen from "./loadingScreen";
@@ -20,32 +19,21 @@ export default function TotamMainPage() {
   // 6 저장 공유 씬
   const [sequence, setSequence] = useState(1);
 
+  const [name, setName] = useState("");
+  const [aiImageUrl, setAiImageUrl] = useState("");
+
   return (
     <div className="absolute h-screen min-w-full">
-      <button
-        className="z-50 text-black text-center absolute top-0 left-0  bg-white"
-        onClick={() =>
-          setSequence((prev) => {
-            if (prev === 5) {
-              return 6;
-            } else {
-              return 5;
-            }
-          })
-        }
-      >
-        상태변경
-      </button>
       {/* <LoadingScreen /> */}
       {sequence !== 7 && (
         <TodamCanvas
-          className="hidden lg:block"
           sequence={sequence}
           setSequence={setSequence}
+          aiImageUrl={aiImageUrl}
         />
       )}
 
-      {(sequence === 2 || sequence === 3 || sequence === 4) && (
+      {(sequence === 2 || sequence === 3) && (
         <div className="absolute top-0 left-0 w-full h-full bg-[#141319] opacity-90 -z-10" />
       )}
 
@@ -53,19 +41,29 @@ export default function TotamMainPage() {
         <Todam1Start sequence={sequence} setSequence={setSequence} />
       )}
       {sequence === 2 && (
-        <Todam2Name sequence={sequence} setSequence={setSequence} />
+        <Todam2Name
+          sequence={sequence}
+          setSequence={setSequence}
+          setName={setName}
+        />
       )}
       {sequence === 3 && (
-        <Todam3Ready sequence={sequence} setSequence={setSequence} />
+        <Todam3Ready
+          sequence={sequence}
+          setSequence={setSequence}
+          name={name}
+          setAiImageUrl={setAiImageUrl}
+        />
       )}
       {sequence === 4 && (
-        <Todam4MakingLoading sequence={sequence} setSequence={setSequence} />
-      )}
-      {sequence === 5 && (
         <Todam5Outcome sequence={sequence} setSequence={setSequence} />
       )}
-      {sequence === 6 && (
-        <Todam6SaveShare sequence={sequence} setSequence={setSequence} />
+      {sequence === 5 && (
+        <Todam6SaveShare
+          aiImageUrl={aiImageUrl}
+          sequence={sequence}
+          setSequence={setSequence}
+        />
       )}
     </div>
   );

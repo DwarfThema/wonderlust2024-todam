@@ -15,7 +15,7 @@ import {
 } from "three";
 import { SkeletonUtils } from "three-stdlib";
 
-export default function TodamCard() {
+export default function TodamCard({ aiImageUrl }: { aiImageUrl: string }) {
   const { scene, animations } = useGLTF("/card/Todam_BoxAnimation__.glb");
 
   const cardGroupRef = useRef<Group>(null);
@@ -62,7 +62,7 @@ export default function TodamCard() {
 
   useEffect(() => {
     const textureLoader = new TextureLoader();
-    const newTexture = textureLoader.load("/card/testTexture.jpg");
+    const newTexture = textureLoader.load(`${aiImageUrl}/todam`);
 
     newTexture.wrapS = MirroredRepeatWrapping;
     newTexture.wrapT = MirroredRepeatWrapping;

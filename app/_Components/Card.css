@@ -15,7 +15,7 @@
   width: 320px;
   height: 510px;
   background-color: #26ff00;
-  background-image: url(https://imagedelivery.net/zX2GiBzzHYsroLCJsWTCdA/94d99fd8-1dbc-4b05-b2e4-975f9475d100/public);
+  background-image: url(https://imagedelivery.net/zX2GiBzzHYsroLCJsWTCdA/94d99fd8-1dbc-4b05-b2e4-975f9475d100/todam);
   background-size: 100%;
   background-repeat: no-repeat;
   background-position: center;
@@ -107,7 +107,7 @@
   mix-blend-mode: screen;
 }
 
-@keyframes holoSparkle {
+/* @keyframes holoSparkle {
   0%,
   5%,
   100% {
@@ -147,4 +147,4 @@
   66% {
     transform: rotateZ(6deg) rotateX(9deg) rotateY(-10deg);
   }
-}
+} */

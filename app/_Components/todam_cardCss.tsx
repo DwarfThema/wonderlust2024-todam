@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useCallback, useState } from "react";
 import "./Card.css";
 
-export const CardCss: React.FC = () => {
+export const CardCss: React.FC<{ aiImageUrl: string }> = ({ aiImageUrl }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const styleRef = useRef<HTMLStyleElement | null>(null);
   const [isFlipped, setIsFlipped] = useState<boolean>(false);
@@ -34,8 +34,6 @@ export const CardCss: React.FC = () => {
       const p_opc = 50 + Math.abs(pa) * 1.5;
       const ty = ((tp - 50) / 2) * -1.3;
       const tx = ((lp - 50) / 1.5) * 1.2;
-
-      console.log(p_opc);
 
       const grad_pos = `background-position: ${lp}% ${tp}%`;
       const sprk_pos = `background-position: ${px_spark}% ${py_spark}%`;
@@ -117,6 +115,7 @@ export const CardCss: React.FC = () => {
       ref={cardRef}
       className={`card gradient sparkles ${isFlipped ? "flipped" : ""}`}
       style={{
+        backgroundImage: `url(${aiImageUrl}/todam)`,
         backgroundColor: "#040712",
         backgroundSize: "cover",
         backgroundRepeat: "no-repeat",
