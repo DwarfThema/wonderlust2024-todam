@@ -1,15 +1,23 @@
+"use client";
+
 import React, { useEffect, useRef, useCallback, useState } from "react";
 import "./Card.css";
+import { isMobile } from "react-device-detect";
 
-export const CardCss: React.FC<{ aiImageUrl: string }> = ({ aiImageUrl }) => {
+export const CardCss: React.FC<{ aiImageUrl: string; isSpecial: boolean }> = ({
+  aiImageUrl,
+  isSpecial = true,
+}) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const styleRef = useRef<HTMLStyleElement | null>(null);
   const [isFlipped, setIsFlipped] = useState<boolean>(false);
+  const [isClient, setIsClient] = useState(false);
 
   let timeoutId: NodeJS.Timeout;
 
   const handleMouseMove = useCallback(
     (e: MouseEvent | TouchEvent) => {
+      if (isMobile) return;
       let pos: [number, number] = [0, 0];
       if (e instanceof MouseEvent) {
         pos = [e.offsetX, e.offsetY];
@@ -41,8 +49,8 @@ export const CardCss: React.FC<{ aiImageUrl: string }> = ({ aiImageUrl }) => {
       const tf = `rotateX(${ty}deg) rotateY(${tx}deg)`;
 
       const style = `
-            .card:hover:before { ${grad_pos} }
-            .card:hover:after { ${sprk_pos}; ${opc}; }
+            ${isSpecial ? `.card:hover:before { ${grad_pos}; }` : ""}
+            ${isSpecial ? `.card:hover:after { ${sprk_pos}; ${opc}; }` : ""}
             .card { transform: ${tf}; transition: transform 0.1s ease-out; }
           `;
 
@@ -56,6 +64,7 @@ export const CardCss: React.FC<{ aiImageUrl: string }> = ({ aiImageUrl }) => {
   );
 
   const handleMouseOut = useCallback(() => {
+    if (isMobile) return;
     const card = cardRef.current;
     if (!card) return;
 
@@ -71,11 +80,13 @@ export const CardCss: React.FC<{ aiImageUrl: string }> = ({ aiImageUrl }) => {
   }, [isFlipped]);
 
   const handleClick = () => {
-    setIsFlipped((prev) => !prev);
-    console.log("Card clicked!");
+    /*     setIsFlipped((prev) => !prev);
+    console.log("Card clicked!"); */
   };
 
   useEffect(() => {
+    if (isMobile) return;
+
     const cardElement = cardRef.current;
 
     if (cardElement) {
@@ -99,6 +110,7 @@ export const CardCss: React.FC<{ aiImageUrl: string }> = ({ aiImageUrl }) => {
     }
 
     return () => {
+      if (isMobile) return;
       if (cardElement) {
         cardElement.removeEventListener("click", handleClick); // Remove click event listener
         cardElement.removeEventListener("mousemove", handleMouseMove);
@@ -110,20 +122,40 @@ export const CardCss: React.FC<{ aiImageUrl: string }> = ({ aiImageUrl }) => {
     };
   }, [handleClick, isFlipped]);
 
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   return (
-    <div
-      ref={cardRef}
-      className={`card gradient sparkles ${isFlipped ? "flipped" : ""}`}
-      style={{
-        backgroundImage: `url(${aiImageUrl}/todam)`,
-        backgroundColor: "#040712",
-        backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
-      }}
-    >
-      <div className="gradient"></div>
-      <div className="sparkles"></div>
-      <style ref={styleRef}></style>
-    </div>
+    <>
+      <div
+        ref={cardRef}
+        className={`card gradient sparkles ${isFlipped ? "flipped" : ""}`}
+        style={
+          {
+            backgroundImage: `${
+              aiImageUrl
+                ? `url(${aiImageUrl}/todam)`
+                : "url(https://imagedelivery.net/zX2GiBzzHYsroLCJsWTCdA/94d99fd8-1dbc-4b05-b2e4-975f9475d100/todam)"
+            }`,
+            backgroundColor: "#040712",
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
+            "--card-shadow": isSpecial
+              ? "-13px -13px 13px -15px rgb(0, 234, 255), 13px 13px 13px -15px rgb(252, 255, 165), 0 0 20px 2px rgba(255, 255, 200, 0.9), 0 35px 25px -15px rgba(0, 0, 0, 0.3)"
+              : "",
+            "--card-opacity": isSpecial ? "1" : "0",
+            "--card-filter": isSpecial ? "brightness(1.2)" : "",
+            "--card-animation": isSpecial
+              ? "holoSparkle 15s ease infinite both"
+              : "",
+            "--card-main-animation":
+              isClient && isMobile ? "holoCard 15s ease infinite" : "",
+          } as React.CSSProperties
+        }
+      >
+        <style ref={styleRef}></style>
+      </div>
+    </>
   );
 };

@@ -1,4 +1,6 @@
 .cards {
+  --color1: rgb(0, 234, 255);
+  --color2: rgb(252, 255, 165);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -9,25 +11,19 @@
 }
 
 .card {
-  --color1: rgb(0, 234, 255);
-  --color2: rgb(252, 255, 165);
-
   width: 320px;
   height: 510px;
   background-color: #26ff00;
-  background-image: url(https://imagedelivery.net/zX2GiBzzHYsroLCJsWTCdA/94d99fd8-1dbc-4b05-b2e4-975f9475d100/todam);
   background-size: 100%;
   background-repeat: no-repeat;
   background-position: center;
   border-radius: 5% / 3.5%;
-  box-shadow: -13px -13px 13px -15px var(--color1),
-    13px 13px 13px -15px var(--color2), 0 0 4px 2px rgba(255, 255, 255, 0.5),
-    0 35px 25px -15px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--card-shadow);
   position: relative;
   overflow: hidden;
   vertical-align: middle;
   margin: 20px 10px;
-  animation: holoCard 15s ease infinite;
+  animation: var(--card-main-animation);
   transform-origin: center;
   z-index: 10;
   overflow: hidden;
@@ -48,6 +44,7 @@
 
 .card:before {
   opacity: 0.1;
+  border-radius: 5% / 3.5%;
   background-position: 50% 50%;
   background-size: 300% 300%;
   animation: holoGradient 15s ease infinite both;
@@ -63,7 +60,6 @@
 }
 
 .card:after {
-  mix-blend-mode: screen;
   background-image: url("/cardCss/holo.webp"), url("/cardCss/sparkles.webp"),
     linear-gradient(
       125deg,
@@ -74,14 +70,14 @@
       #00cfff40 70%,
       #cc4cfa50 85%
     );
-  background-blend-mode: overlay;
+  background-blend-mode: soft-light;
   mix-blend-mode: color-dodge;
-  opacity: 1;
-  background-size: 160%;
+  opacity: var(--card-opacity);
+  background-size: cover;
   z-index: 2;
-  filter: brightness(1) opacity(0.66);
-  animation: holoSparkle 15s ease infinite both;
-  transition: filter 0.5s ease, holoGradient 0.5s ease;
+  filter: var(--card-filter);
+  animation: var(--card-animation);
+  transition: filter 0.5s ease, holoSparkle 0.5s ease;
 }
 
 .card:after:hover {
@@ -107,17 +103,95 @@
   mix-blend-mode: screen;
 }
 
-/* @keyframes holoSparkle {
+.cardsArrays {
+  perspective: 2000px;
+  position: relative;
+  z-index: 1;
+  transform: translate3d(0.1px, 0.1px, 0.1px);
+}
+
+.cardArray {
+  width: 160px;
+  height: 255px;
+  background-color: #26ff00;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  border-radius: 5% / 3.5%;
+  box-shadow: var(--card-shadow);
+  position: relative;
+  overflow: hidden;
+  vertical-align: middle;
+  margin: 20px 10px;
+  animation: var(--card-main-animation);
+  transform-origin: center;
+  z-index: 10;
+  overflow: hidden;
+}
+
+.cardArray:before,
+.cardArray:after {
+  content: "";
+  mix-blend-mode: screen;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  background-repeat: no-repeat;
+}
+
+.cardArray:before {
+  opacity: 0.1;
+  background-position: 50% 50%;
+  background-size: 300% 300%;
+  background-image: linear-gradient(
+    115deg,
+    transparent 0%,
+    var(--color1) 30%,
+    transparent 47.5%,
+    transparent 52.5%,
+    var(--color2) 70%,
+    transparent 100%
+  );
+}
+
+.cardArray:after {
+  mix-blend-mode: screen;
+  background-image: url("/cardCss/holo.webp"), url("/cardCss/sparkles.webp"),
+    linear-gradient(
+      125deg,
+      #ff008450 15%,
+      #fca40040 30%,
+      #ffff0030 40%,
+      #00ff8a20 60%,
+      #00cfff40 70%,
+      #cc4cfa50 85%
+    );
+  background-blend-mode: overlay;
+  mix-blend-mode: color-dodge;
+  opacity: var(--card-opacity);
+  background-size: 160%;
+  z-index: 2;
+  filter: var(--card-filter);
+  animation: var(--card-animation);
+  transition: filter 0.5s ease, holoGradient 0.5s ease;
+}
+
+@keyframes holoSparkle {
   0%,
   5%,
   100% {
-    opacity: 1;
+    opacity: 0.7;
+    background-position: 50% 50%;
   }
   20% {
-    opacity: 1;
+    opacity: 0.7;
+    background-position: 100% 100%;
   }
   75% {
-    opacity: 1;
+    opacity: 0.7;
+    background-position: 0% 0%;
   }
 }
 
@@ -129,13 +203,14 @@
   }
   33% {
     background-position: 100% 100%;
-    opacity: 0.66;
+    opacity: 0.33;
   }
   66% {
     background-position: 0% 0%;
-    opacity: 0.66;
+    opacity: 0.33;
   }
 }
+
 @keyframes holoCard {
   0%,
   100% {
@@ -147,4 +222,15 @@
   66% {
     transform: rotateZ(6deg) rotateX(9deg) rotateY(-10deg);
   }
-} */
+}
+
+.cardArray {
+  transform-style: preserve-3d;
+}
+
+.card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+}

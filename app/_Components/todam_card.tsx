@@ -16,14 +16,14 @@ import {
 import { SkeletonUtils } from "three-stdlib";
 
 export default function TodamCard({ aiImageUrl }: { aiImageUrl: string }) {
-  const { scene, animations } = useGLTF("/card/Todam_BoxAnimation__.glb");
+  const { scene, animations } = useGLTF("/card/Todam_Particle.glb");
 
   const cardGroupRef = useRef<Group>(null);
 
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes } = useGraph(clone);
 
-  const cardMesh = nodes.Scene as Group;
+  const cardMesh = nodes.Scene_Explode_Bake_0725 as Group;
 
   const { ref: animRef, actions, names } = useAnimations(animations);
 
@@ -62,7 +62,9 @@ export default function TodamCard({ aiImageUrl }: { aiImageUrl: string }) {
 
   useEffect(() => {
     const textureLoader = new TextureLoader();
-    const newTexture = textureLoader.load(`${aiImageUrl}/todam`);
+    const newTexture = textureLoader.load(
+      aiImageUrl ? `${aiImageUrl}/todam` : "card/testTexture.jpg"
+    );
 
     newTexture.wrapS = MirroredRepeatWrapping;
     newTexture.wrapT = MirroredRepeatWrapping;
@@ -71,7 +73,7 @@ export default function TodamCard({ aiImageUrl }: { aiImageUrl: string }) {
 
     meshs.forEach((mesh) => {
       if (
-        mesh.name === "Plane001" &&
+        mesh.name === "Plane016" &&
         mesh.material instanceof MeshStandardMaterial
       ) {
         mesh.material.map = newTexture;
@@ -93,9 +95,8 @@ export default function TodamCard({ aiImageUrl }: { aiImageUrl: string }) {
         position={[0, -0.2, -6]}
         name="card"
       >
-        <primitive object={nodes.Armature} ref={animRef} />
+        <primitive object={nodes.Armature003} ref={animRef} />
         {meshs.map((mesh, index) => {
-          console.log(mesh.name, " : ", mesh.material);
           return (
             <skinnedMesh
               key={index}
@@ -107,7 +108,7 @@ export default function TodamCard({ aiImageUrl }: { aiImageUrl: string }) {
             />
           );
         })}
-      </group>
+      </group>{" "}
     </Float>
   );
 }

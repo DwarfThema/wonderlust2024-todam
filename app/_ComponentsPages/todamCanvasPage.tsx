@@ -40,7 +40,7 @@ export default function TodamCanvas({
   }, []);
 
   return (
-    <div className={`absolute w-full h-screen bg-black -z-20 ${className}`}>
+    <div className={`fixed w-full h-full bg-black -z-20 ${className}`}>
       <Canvas camera={{ fov: 50 }}>
         <Suspense>
           {sequence === 4 && <TodamCard aiImageUrl={aiImageUrl} />}
@@ -70,11 +70,11 @@ export default function TodamCanvas({
             color={"#FFF446"}
           />
           <EffectComposer>
-            <Bloom
+            {/*             <Bloom
               luminanceThreshold={0.8}
               luminanceSmoothing={1.5}
               intensity={1}
-            />
+            /> */}
             <Vignette eskil={false} offset={0.01} darkness={0.75} />
           </EffectComposer>
         </Suspense>

@@ -26,9 +26,18 @@ export default function Todam2Name({
           type="text"
           placeholder="여기요!"
           className="bg-neutral-200 text-neutral-900 px-4 py-2 rounded-md"
-          onChange={(e) => setName(e.target.value)}
+          onChange={(e) => {
+            const englishOnly = e.target.value.replace(/[^a-zA-Z]/g, "");
+            setName(englishOnly);
+          }}
+          pattern="[A-Za-z]+"
+          title="영문만 가능합니다."
+          min={4}
+          max={15}
         />
-        <TodamButton>이름을 입력해주세요</TodamButton>
+        <button>
+          <TodamButton isBlue={true}>이름을 입력해주세요</TodamButton>
+        </button>
       </form>
     </div>
   );

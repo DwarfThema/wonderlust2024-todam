@@ -21,13 +21,35 @@ export default function Todam3Ready({
   const [photoId, setImageId] = useState("");
   const [photoData, setPhotoData] = useState<File | null>(null);
 
-  const openCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      // Do something with the stream, e.g., attach it to a video element
-    } catch (err) {
-      console.error("Error accessing the camera: ", err);
-    }
+  const openCamera = () => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.capture = "environment";
+
+    input.onchange = (event) => {
+      const file = (event.target as HTMLInputElement).files?.[0];
+      if (file) {
+        // 파일 크기 제한 (예: 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          alert("파일 크기가 너무 큽니다. 5MB 이하의 이미지를 선택해주세요.");
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const imageDataUrl = e.target?.result as string;
+          // setTimeout을 사용하여 상태 업데이트를 다음 틱으로 지연
+          setTimeout(() => {
+            setPreviewPhotoURL(imageDataUrl);
+            setPhotoData(file);
+          }, 0);
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+
+    input.click();
   };
 
   const onImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -93,50 +115,36 @@ export default function Todam3Ready({
     }
   }, [state?.ok]);
 
+  // useEffect를 사용하여 previewPhotoURL 변경 감지
+  useEffect(() => {
+    console.log("Preview URL updated:", previewPhotoURL);
+  }, [previewPhotoURL]);
+
   return (
     <>
       {!isLoading ? (
-        <div className="flex flex-col text-center items-center justify-center absolute h-full min-w-full">
+        <div className="flex flex-col text-center items-center justify-center absolute h-full min-w-full gap-8">
           {previewPhotoURL === "" ? (
             <>
-              <h1>이런 사진이 좋아요!</h1>
-              <div className="grid grid-cols-3 w-full px-5 my-12 h-[20%] gap-4">
-                <div className="h-full w-full rounded-lg bg-neutral-500"></div>
-                <div className="h-full w-full rounded-lg bg-neutral-500"></div>
-                <div className="h-full w-full rounded-lg bg-neutral-500"></div>
+              <div className="flex flex-col gap-3">
+                <h1>이런 사진이 좋아요!</h1>
+                <div className="flex flex-row gap-4 w-full h-[20%] ">
+                  <div className="h-[210px] w-[150px] rounded-lg bg-neutral-500"></div>
+                  <div className="h-[210px] w-[150px] rounded-lg bg-neutral-500"></div>
+                  <div className="h-[210px] w-[150px] rounded-lg bg-neutral-500 lg:block hidden"></div>
+                </div>
               </div>
 
-              <div className="flex flex-col gap-5">
-                <div className="sm:hidden">
-                  <label
-                    htmlFor="fileInput1"
-                    className="bg-slate-500 py-3 px-8 rounded-lg text-white"
-                  >
+              <div className="flex flex-col gap-1 items-center">
+                <div className="sm:hidden w-[200px] h-[50px]">
+                  <TodamButton isBlue={false} onClick={openCamera}>
                     촬영하기
-                  </label>
-                  <input
-                    id="fileInput1"
-                    type="file"
-                    name="photo"
-                    accept="image/*"
-                    capture="environment"
-                    className="hidden"
-                    onClick={(e) => {
-                      if (window.innerWidth <= 768) {
-                        // Mobile
-                        openCamera(); // Open camera using browser API
-                      } else {
-                        // PC
-                        setSequence(3);
-                      }
-                    }}
-                  />
+                  </TodamButton>
                 </div>
-                <label
-                  htmlFor="fileInput2"
-                  className="bg-slate-500 py-3 px-8 rounded-lg text-white"
-                >
-                  앨범에서 사진 선택하기
+                <label htmlFor="fileInput2" className="w-[200px] h-[50px]">
+                  <TodamButton isBlue={true}>
+                    앨범에서 사진 선택하기
+                  </TodamButton>
                 </label>
                 <input
                   onChange={onImageChange}
@@ -151,7 +159,7 @@ export default function Todam3Ready({
           ) : (
             <div className="flex flex-col gap-5 w-full h-full items-center justify-center">
               <div
-                className="h-[500px] w-[300px] shadow-md bg-contain bg-center bg-no-repeat"
+                className="h-[400px] w-[300px] shadow-md bg-contain bg-center bg-no-repeat"
                 style={{
                   backgroundImage: `url(${previewPhotoURL})`,
                 }}
@@ -160,7 +168,9 @@ export default function Todam3Ready({
                 원본 사진은 절대 외부로 유출되지 않으며 카드 제작에만 사용됩니다
               </div>
               <form action={dispatch}>
-                <TodamButton>카드 만들기 시작</TodamButton>
+                <button>
+                  <TodamButton isBlue={true}>카드 만들기 시작</TodamButton>
+                </button>
               </form>
             </div>
           )}
