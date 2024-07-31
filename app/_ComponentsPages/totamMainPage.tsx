@@ -25,7 +25,15 @@ export default function TotamMainPage() {
 
   return (
     <div className="flex justify-center ">
-      {sequence === 5 && !isMobile && (
+      {isMobile ? (
+        sequence === 5 ? null : (
+          <TodamCanvas
+            sequence={sequence}
+            setSequence={setSequence}
+            aiImageUrl={aiImageUrl}
+          />
+        )
+      ) : (
         <TodamCanvas
           sequence={sequence}
           setSequence={setSequence}
@@ -35,13 +43,13 @@ export default function TotamMainPage() {
 
       {sequence === 2 || sequence === 3 ? (
         <div className="fixed top-0 left-0 w-full h-full bg-[#141319] opacity-90 -z-10" />
-      ) : (
+      ) : sequence === 5 ? (
         <div
           className={`fixed top-0 left-0 w-full h-full bg-[#141319] opacity-${
             isMobile ? "100" : "40"
           } -z-10`}
         />
-      )}
+      ) : null}
 
       {sequence !== 5 && (
         <div className="flex min-h-screen flex-col min-w-screen justify-center items-center w-auto h-auto text-white">

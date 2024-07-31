@@ -45,8 +45,8 @@ export default function TodamCanvas({
         <Suspense>
           {sequence === 4 && <TodamCard aiImageUrl={aiImageUrl} />}
 
-          <ambientLight />
-          <Environment preset="apartment" />
+          <ambientLight intensity={2} />
+          {/* <Environment preset="warehouse" /> */}
           <color attach="background" args={["#141319"]} />
           <fog attach="fog" args={["#141319", 10, 70]} />
 

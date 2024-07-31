@@ -1,6 +1,6 @@
 "use client";
 
-import { Float, useAnimations, useGLTF } from "@react-three/drei";
+import { Float, useAnimations, useFBX, useGLTF } from "@react-three/drei";
 import { useFrame, useGraph } from "@react-three/fiber";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -16,19 +16,22 @@ import {
 import { SkeletonUtils } from "three-stdlib";
 
 export default function TodamCard({ aiImageUrl }: { aiImageUrl: string }) {
-  const { scene, animations } = useGLTF("/card/Todam_Particle.glb");
+  const [isAnimEnd, setIsAnimEnd] = useState(false);
+
+  const { scene, animations } = useGLTF("/card/Particle_Test.glb");
 
   const cardGroupRef = useRef<Group>(null);
 
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes } = useGraph(clone);
 
-  const cardMesh = nodes.Scene_Explode_Bake_0725 as Group;
+  const cardMesh = nodes.Scene as Group;
 
   const { ref: animRef, actions, names } = useAnimations(animations);
 
   const meshs: SkinnedMesh[] = [];
   cardMesh.traverse((obj) => {
+    //console.log(obj);
     if (obj instanceof SkinnedMesh) {
       meshs.push(obj);
     }
@@ -38,6 +41,9 @@ export default function TodamCard({ aiImageUrl }: { aiImageUrl: string }) {
     useState<AnimationAction | null>(null);
 
   useEffect(() => {
+    console.log(names);
+    console.log(nodes);
+
     if (actions[names[0]]) {
       const currentAction = actions[names[0]] as AnimationAction;
       setCurrentActionState(currentAction);
@@ -48,8 +54,6 @@ export default function TodamCard({ aiImageUrl }: { aiImageUrl: string }) {
       currentAction.play();
     }
   }, [meshs]);
-
-  const [isAnimEnd, setIsAnimEnd] = useState(false);
 
   useFrame(() => {
     if (currentActionState && !isAnimEnd) {
@@ -73,7 +77,7 @@ export default function TodamCard({ aiImageUrl }: { aiImageUrl: string }) {
 
     meshs.forEach((mesh) => {
       if (
-        mesh.name === "Plane016" &&
+        mesh.name === "Plane014" &&
         mesh.material instanceof MeshStandardMaterial
       ) {
         mesh.material.map = newTexture;
@@ -89,26 +93,30 @@ export default function TodamCard({ aiImageUrl }: { aiImageUrl: string }) {
       floatIntensity={1} // Up/down float intensity, works like a multiplier with floatingRange,defaults to 1
       floatingRange={[0.05, -0.05]} // Range of y-axis values the object will float within, defaults to [-0.1,0.1]
     >
-      <group
-        ref={cardGroupRef}
-        scale={[28, 28, 28]}
-        position={[0, -0.2, -6]}
-        name="card"
-      >
-        <primitive object={nodes.Armature003} ref={animRef} />
-        {meshs.map((mesh, index) => {
-          return (
-            <skinnedMesh
-              key={index}
-              geometry={mesh.geometry}
-              material={mesh.material}
-              skeleton={mesh.skeleton}
-              receiveShadow
-              castShadow
-            />
-          );
-        })}
-      </group>{" "}
+      {
+        <group
+          ref={cardGroupRef}
+          scale={[28, 28, 28]}
+          position={[0, -0.2, -6]}
+          name="card"
+        >
+          <primitive object={nodes.Particle01__Bone} ref={animRef} />
+          {meshs.map((mesh, index) => {
+            //console.log(mesh);
+
+            return (
+              <skinnedMesh
+                key={index}
+                geometry={mesh.geometry}
+                material={mesh.material}
+                skeleton={mesh.skeleton}
+                receiveShadow
+                castShadow
+              />
+            );
+          })}
+        </group>
+      }
     </Float>
   );
 }

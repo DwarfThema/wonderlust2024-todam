@@ -19,15 +19,17 @@ export default function Todam5Outcome({
   return (
     <div className="flex flex-col text-center items-center justify-center absolute h-full min-w-full">
       <h1 className="absolute top-[5%]">Todam5Outcome</h1>
-      <TodamButton
-        isBlue={true}
-        className={`absolute bottom-[10%] transition-opacity duration-500 ${
-          isShowing ? "opacity-100" : "opacity-0"
-        }`}
-        onClick={() => setSequence(5)}
-      >
-        <h1>Continue</h1>
-      </TodamButton>
+      <div className="w-[300px] h-[50px] absolute bottom-[10%] ">
+        <TodamButton
+          isBlue={true}
+          className={`transition-opacity duration-500 ${
+            isShowing ? "opacity-100" : "opacity-0"
+          }`}
+          onClick={() => setSequence(5)}
+        >
+          <h1>Continue</h1>
+        </TodamButton>
+      </div>
     </div>
   );
 }

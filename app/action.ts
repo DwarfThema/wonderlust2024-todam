@@ -62,7 +62,10 @@ export const fetchFormdata = async (prevdata: any, formData: FormData) => {
       };
     } catch (error) {
       console.error("서버 요청 중 오류 발생:", error);
-      return { ok: false, error: error };
+      return {
+        ok: false,
+        error: error instanceof Error ? error.message : String(error),
+      };
     }
   }
 };

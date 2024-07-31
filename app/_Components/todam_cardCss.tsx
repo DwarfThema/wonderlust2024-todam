@@ -1,13 +1,18 @@
 "use client";
 
-import React, { useEffect, useRef, useCallback, useState } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useCallback,
+  useState,
+  HTMLProps,
+} from "react";
 import "./Card.css";
 import { isMobile } from "react-device-detect";
 
-export const CardCss: React.FC<{ aiImageUrl: string; isSpecial: boolean }> = ({
-  aiImageUrl,
-  isSpecial = true,
-}) => {
+export const CardCss: React.FC<
+  { aiImageUrl: string; isSpecial: boolean } & HTMLProps<HTMLDivElement>
+> = ({ aiImageUrl, isSpecial = true, ...props }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const styleRef = useRef<HTMLStyleElement | null>(null);
   const [isFlipped, setIsFlipped] = useState<boolean>(false);
@@ -49,8 +54,8 @@ export const CardCss: React.FC<{ aiImageUrl: string; isSpecial: boolean }> = ({
       const tf = `rotateX(${ty}deg) rotateY(${tx}deg)`;
 
       const style = `
-            ${isSpecial ? `.card:hover:before { ${grad_pos}; }` : ""}
             ${isSpecial ? `.card:hover:after { ${sprk_pos}; ${opc}; }` : ""}
+            .card:hover:before { ${grad_pos}; }
             .card { transform: ${tf}; transition: transform 0.1s ease-out; }
           `;
 
@@ -129,6 +134,7 @@ export const CardCss: React.FC<{ aiImageUrl: string; isSpecial: boolean }> = ({
   return (
     <>
       <div
+        {...props}
         ref={cardRef}
         className={`card gradient sparkles ${isFlipped ? "flipped" : ""}`}
         style={

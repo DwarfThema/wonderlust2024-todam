@@ -1,34 +1,10 @@
-import { useCallback, useRef, useState, useEffect } from "react";
+import { useCallback, useRef, useState, useEffect, FormEvent } from "react";
 import { CardCss } from "../_Components/todam_cardCss";
 import { CardCssArray } from "../_Components/todam_cardCssArray";
 import TodamButton from "./todamButton";
 import { isMobile } from "react-device-detect";
 import { is } from "@react-three/fiber/dist/declarations/src/core/utils";
-
-const cardData = [
-  { isSpecial: true },
-  { isSpecial: true },
-  { isSpecial: false },
-  { isSpecial: true },
-  { isSpecial: false },
-  { isSpecial: true },
-  { isSpecial: false },
-  { isSpecial: true },
-  { isSpecial: false },
-  { isSpecial: false },
-  { isSpecial: false },
-  { isSpecial: true },
-  { isSpecial: false },
-  { isSpecial: true },
-  { isSpecial: false },
-  { isSpecial: true },
-  { isSpecial: false },
-  { isSpecial: true },
-  { isSpecial: false },
-  { isSpecial: true },
-  { isSpecial: false },
-  { isSpecial: true },
-];
+import html2canvas from "html2canvas";
 
 export default function Todam6SaveShare({
   sequence,
@@ -41,34 +17,55 @@ export default function Todam6SaveShare({
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  const [img, setImg] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const handleSaveImage = () => {
-    const link = document.createElement("a");
-    link.href = `${aiImageUrl}/todam`;
-    link.download = "todam_image.png"; // 원하는 파일명으로 변경 가능
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const cardElement = document.getElementById("CardArea");
+    if (cardElement) {
+      html2canvas(cardElement, {
+        backgroundColor: null,
+        logging: false,
+        useCORS: true,
+        onclone: (clonedDoc) => {
+          const clonedElement = clonedDoc.getElementById("CardArea");
+          if (clonedElement) {
+            clonedElement.innerHTML = "";
+            clonedElement.style.width = `${320 * 2}px`;
+            clonedElement.style.height = `${510 * 2}px`;
+          }
+        },
+      }).then((canvas) => {
+        const imageDataUrl = canvas.toDataURL("image/png");
+        setImg(imageDataUrl);
+        setIsModalOpen(true);
+      });
+    }
   };
+  const [isSpecial, setIsSpecial] = useState(true);
 
   return (
     <div className="flex flex-col gap-10 text-center items-center justify-center h-full max-w-full lg:pt-[100px] pt-[50px]">
-      <section className="cards flex gap-16 w-screen items-center justify-evenly md:flex-row">
-        <CardCss isSpecial={true} aiImageUrl={aiImageUrl} />
+      <button
+        className="bg-white p-2 rounded-md"
+        onClick={() => setIsSpecial((prev) => !prev)}
+      >
+        카드 변경
+      </button>
+      <section className="cards flex gap-16 w-full items-center justify-evenly md:flex-row">
+        <CardCss id="CardArea" isSpecial={isSpecial} aiImageUrl={aiImageUrl} />
       </section>
 
       <div className="flex flex-col w-[300px] gap-14">
         <div className="flex flex-col gap-2">
           <div className="flex justify-center gap-4 w-full h-[50px]">
-            <TodamButton isBlue={true} onClick={handleSaveImage}>
-              저장하기
+            <TodamButton isBlue={false} onClick={handleSaveImage}>
+              저장하기 / 공유하기
             </TodamButton>
-            <TodamButton isBlue={false}>공유하기</TodamButton>
           </div>
+
           <div className="flex justify-center gap-4 w-full h-[55px]">
-            <TodamButton isBlue={false}>다시하기</TodamButton>
-          </div>
-          <div className="flex justify-center gap-4 w-full h-[55px]">
-            <TodamButton isBlue={true}>{`구매하기(소장하기)`}</TodamButton>
+            <TodamButton isBlue={true}>{`소장하기`}</TodamButton>
           </div>
         </div>
         <div className="flex flex-col gap-3">
@@ -104,6 +101,11 @@ export default function Todam6SaveShare({
         </div>
       </div>
       <canvas ref={canvasRef} style={{ display: "none" }} />
+      <ImageModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        imageUrl={img}
+      />
     </div>
   );
 }
@@ -245,3 +247,74 @@ function CardGrid({ aiImageUrl }: { aiImageUrl: string }) {
     </div>
   );
 }
+
+// New ImageModal component
+function ImageModal({
+  isOpen,
+  onClose,
+  imageUrl,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  imageUrl: string;
+}) {
+  if (!isOpen) return null;
+
+  const handleDownload = () => {
+    const link = document.createElement("a");
+    link.href = imageUrl;
+    link.download = "todam-card-background.png";
+    link.click();
+  };
+
+  return (
+    <div
+      className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
+      onClick={onClose} // 배경 클릭 시 모달 닫기
+    >
+      <div
+        className="p-4 rounded-lg overflow-hidden"
+        onClick={(e) => e.stopPropagation()} // 내부 클릭 시 이벤트 전파 방지
+      >
+        <div className="w-[300px] h-fit flex items-center justify-center mb-4">
+          <img
+            src={imageUrl}
+            alt="Generated Card"
+            className="max-w-full max-h-full object-contain"
+          />
+        </div>
+        <div className="flex justify-center w-[300px] h-[50px]">
+          <TodamButton isBlue={false} onClick={handleDownload}>
+            DOWNLOAD
+          </TodamButton>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const cardData = [
+  { isSpecial: true },
+  { isSpecial: true },
+  { isSpecial: false },
+  { isSpecial: true },
+  { isSpecial: false },
+  { isSpecial: true },
+  { isSpecial: false },
+  { isSpecial: true },
+  { isSpecial: false },
+  { isSpecial: false },
+  { isSpecial: false },
+  { isSpecial: true },
+  { isSpecial: false },
+  { isSpecial: true },
+  { isSpecial: false },
+  { isSpecial: true },
+  { isSpecial: false },
+  { isSpecial: true },
+  { isSpecial: false },
+  { isSpecial: true },
+  { isSpecial: false },
+  { isSpecial: true },
+  { isSpecial: false },
+];

@@ -47,7 +47,7 @@
   border-radius: 5% / 3.5%;
   background-position: 50% 50%;
   background-size: 300% 300%;
-  animation: holoGradient 15s ease infinite both;
+  animation: var(--card-before-animation);
   background-image: linear-gradient(
     115deg,
     transparent 0%,
