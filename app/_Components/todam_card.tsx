@@ -12,111 +12,85 @@ import {
   SkinnedMesh,
   TextureLoader,
   MeshStandardMaterial,
+  Mesh,
 } from "three";
 import { SkeletonUtils } from "three-stdlib";
 
-export default function TodamCard({ aiImageUrl }: { aiImageUrl: string }) {
+export default function TodamCard({
+  aiImageUrl = "https://imagedelivery.net/zX2GiBzzHYsroLCJsWTCdA/94d99fd8-1dbc-4b05-b2e4-975f9475d100",
+}: {
+  aiImageUrl: string;
+}) {
   const [isAnimEnd, setIsAnimEnd] = useState(false);
-
-  const { scene, animations } = useGLTF("/card/Particle_Test.glb");
-
   const cardGroupRef = useRef<Group>(null);
 
+  const { scene, animations } = useGLTF("/card/Todam_Card.glb");
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
   const { nodes } = useGraph(clone);
 
-  const cardMesh = nodes.Scene as Group;
+  const { actions } = useAnimations(animations, clone);
 
-  const { ref: animRef, actions, names } = useAnimations(animations);
+  const [mainGroup, setMainGroup] = useState<Group | null>(null);
 
-  const meshs: SkinnedMesh[] = [];
-  cardMesh.traverse((obj) => {
-    //console.log(obj);
-    if (obj instanceof SkinnedMesh) {
-      meshs.push(obj);
-    }
-  });
-
-  const [currentActionState, setCurrentActionState] =
-    useState<AnimationAction | null>(null);
-
-  useEffect(() => {
-    console.log(names);
-    console.log(nodes);
-
-    if (actions[names[0]]) {
-      const currentAction = actions[names[0]] as AnimationAction;
-      setCurrentActionState(currentAction);
-      currentAction.reset();
-      currentAction.setLoop(LoopOnce, 1);
-      currentAction.clampWhenFinished = true;
-      currentAction.setEffectiveTimeScale(1);
-      currentAction.play();
-    }
-  }, [meshs]);
-
-  useFrame(() => {
-    if (currentActionState && !isAnimEnd) {
-      if (currentActionState?.time <= 11.666666984558105) {
-        currentActionState?.stop();
-        setIsAnimEnd(true);
-      }
-    }
-  });
-
-  useEffect(() => {
+  const texture = useMemo(() => {
     const textureLoader = new TextureLoader();
     const newTexture = textureLoader.load(
-      aiImageUrl ? `${aiImageUrl}/todam` : "card/testTexture.jpg"
+      aiImageUrl
+        ? `${aiImageUrl}/todam`
+        : "https://imagedelivery.net/zX2GiBzzHYsroLCJsWTCdA/94d99fd8-1dbc-4b05-b2e4-975f9475d100/todam"
     );
 
     newTexture.wrapS = MirroredRepeatWrapping;
     newTexture.wrapT = MirroredRepeatWrapping;
-    newTexture.center.set(0.5, 0.5); // Set the center of rotation to the center of the texture
-    newTexture.rotation = MathUtils.degToRad(180); // Rotate the texture 180 degrees
+    newTexture.center.set(0.5, 0.5);
+    newTexture.repeat.set(-1, 1); // 좌우반전을 위해 x축 반복을 -1로 설정
+    newTexture.rotation = MathUtils.degToRad(180);
 
-    meshs.forEach((mesh) => {
-      if (
-        mesh.name === "Plane014" &&
-        mesh.material instanceof MeshStandardMaterial
-      ) {
-        mesh.material.map = newTexture;
-        mesh.material.needsUpdate = true;
-      }
-    });
-  }, [meshs]);
+    return newTexture;
+  }, [aiImageUrl]);
+
+  useEffect(() => {
+    if (clone) {
+      const group = new Group();
+      group.add(clone);
+      setMainGroup(group);
+
+      // 텍스처를 적용할 메시 찾기
+      clone.traverse((object) => {
+        if (
+          object.name === "CardMesh" &&
+          object instanceof Mesh &&
+          object.material instanceof MeshStandardMaterial
+        ) {
+          object.material.map = texture;
+          object.material.needsUpdate = true;
+        }
+      });
+    }
+  }, [clone, texture]);
+
+  useEffect(() => {
+    if (mainGroup && actions) {
+      Object.values(actions).forEach((action) => {
+        if (action) {
+          action.reset();
+          action.setLoop(LoopOnce, 1);
+          action.clampWhenFinished = true;
+          action.setEffectiveTimeScale(1);
+          action.play();
+        }
+      });
+    }
+  }, [mainGroup, actions]);
 
   return (
-    <Float
-      speed={isAnimEnd ? 3 : 0} // Animation speed, defaults to 1
-      rotationIntensity={0} // XYZ rotation intensity, defaults to 1
-      floatIntensity={1} // Up/down float intensity, works like a multiplier with floatingRange,defaults to 1
-      floatingRange={[0.05, -0.05]} // Range of y-axis values the object will float within, defaults to [-0.1,0.1]
+    <group
+      ref={cardGroupRef}
+      scale={[28, 28, 28]}
+      position={[0, 0, -7.5]}
+      name="card"
     >
-      {
-        <group
-          ref={cardGroupRef}
-          scale={[28, 28, 28]}
-          position={[0, -0.2, -6]}
-          name="card"
-        >
-          <primitive object={nodes.Particle01__Bone} ref={animRef} />
-          {meshs.map((mesh, index) => {
-            //console.log(mesh);
-
-            return (
-              <skinnedMesh
-                key={index}
-                geometry={mesh.geometry}
-                material={mesh.material}
-                skeleton={mesh.skeleton}
-                receiveShadow
-                castShadow
-              />
-            );
-          })}
-        </group>
-      }
-    </Float>
+      {mainGroup && <primitive object={mainGroup} />}
+    </group>
   );
 }

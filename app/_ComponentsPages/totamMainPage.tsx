@@ -18,7 +18,7 @@ export default function TotamMainPage() {
   // 4 결과물 애니메이션
   // 5 저장 공유 씬
 
-  const [sequence, setSequence] = useState(5);
+  const [sequence, setSequence] = useState(4);
 
   const [name, setName] = useState("");
   const [aiImageUrl, setAiImageUrl] = useState("");

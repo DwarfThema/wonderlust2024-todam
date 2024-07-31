@@ -1,3 +1,5 @@
+"use client";
+
 import { useCallback, useRef, useState, useEffect, FormEvent } from "react";
 import { CardCss } from "../_Components/todam_cardCss";
 import { CardCssArray } from "../_Components/todam_cardCssArray";
@@ -5,6 +7,7 @@ import TodamButton from "./todamButton";
 import { isMobile } from "react-device-detect";
 import { is } from "@react-three/fiber/dist/declarations/src/core/utils";
 import html2canvas from "html2canvas";
+import Image from "next/image";
 
 export default function Todam6SaveShare({
   sequence,
@@ -104,7 +107,8 @@ export default function Todam6SaveShare({
       <ImageModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        imageUrl={img}
+        imageUrl={aiImageUrl}
+        downloadImg={img}
       />
     </div>
   );
@@ -252,20 +256,28 @@ function CardGrid({ aiImageUrl }: { aiImageUrl: string }) {
 function ImageModal({
   isOpen,
   onClose,
-  imageUrl,
+  imageUrl = "https://imagedelivery.net/zX2GiBzzHYsroLCJsWTCdA/94d99fd8-1dbc-4b05-b2e4-975f9475d100",
+  downloadImg,
 }: {
   isOpen: boolean;
   onClose: () => void;
   imageUrl: string;
+  downloadImg: string;
 }) {
   if (!isOpen) return null;
 
+  const [imageUrlState, setImageUrlState] = useState(imageUrl);
+
   const handleDownload = () => {
     const link = document.createElement("a");
-    link.href = imageUrl;
+    link.href = downloadImg;
     link.download = "todam-card-background.png";
     link.click();
   };
+
+  useEffect(() => {
+    console.log(imageUrl);
+  }, []);
 
   return (
     <div
@@ -273,14 +285,15 @@ function ImageModal({
       onClick={onClose} // 배경 클릭 시 모달 닫기
     >
       <div
-        className="p-4 rounded-lg overflow-hidden"
+        className="flex flex-col items-center justify-center"
         onClick={(e) => e.stopPropagation()} // 내부 클릭 시 이벤트 전파 방지
       >
-        <div className="w-[300px] h-fit flex items-center justify-center mb-4">
-          <img
-            src={imageUrl}
+        <div className="w-[300px] h-[500px] flex items-center justify-center mb-4 relative">
+          <Image
+            src={`${imageUrlState}/todam`}
             alt="Generated Card"
-            className="max-w-full max-h-full object-contain"
+            fill
+            className="object-contain"
           />
         </div>
         <div className="flex justify-center w-[300px] h-[50px]">

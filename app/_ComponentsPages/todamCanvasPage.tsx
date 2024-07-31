@@ -45,7 +45,7 @@ export default function TodamCanvas({
         <Suspense>
           {sequence === 4 && <TodamCard aiImageUrl={aiImageUrl} />}
 
-          <ambientLight intensity={2} />
+          <ambientLight intensity={2.5} />
           {/* <Environment preset="warehouse" /> */}
           <color attach="background" args={["#141319"]} />
           <fog attach="fog" args={["#141319", 10, 70]} />
@@ -70,11 +70,11 @@ export default function TodamCanvas({
             color={"#FFF446"}
           />
           <EffectComposer>
-            {/*             <Bloom
+            <Bloom
               luminanceThreshold={0.8}
               luminanceSmoothing={1.5}
               intensity={1}
-            /> */}
+            />
             <Vignette eskil={false} offset={0.01} darkness={0.75} />
           </EffectComposer>
         </Suspense>
