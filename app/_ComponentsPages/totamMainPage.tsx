@@ -45,8 +45,8 @@ export default function TotamMainPage() {
         <div className="fixed top-0 left-0 w-full h-full bg-[#141319] opacity-90 -z-10" />
       ) : sequence === 5 ? (
         <div
-          className={`fixed top-0 left-0 w-full h-full bg-[#141319] opacity-${
-            isMobile ? "100" : "40"
+          className={`fixed top-0 left-0 w-full h-full bg-[#141319] ${
+            isMobile ? "opacity-100" : "opacity-40"
           } -z-10`}
         />
       ) : null}
